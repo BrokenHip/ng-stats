@@ -169,10 +169,11 @@ function showAngularStats(opts) {
   // add the DOM element
   var htmlId = opts.htmlId ? (' id="' + opts.htmlId + '"') : '';
   state.$el = angular.element('<div' + htmlId +
-      '><canvas></canvas><div><span></span> | <span></span></div></div>').css(opts.styles);
+      '><canvas></canvas><div><span></span> | <span></span><br /><span id="rootscope-listener-count" style="color: white;">-</span></div></div>').css(opts.styles);
   bodyEl.append(state.$el);
   var $watchCount = state.$el.find('span');
   var $digestTime = $watchCount.next();
+  var $listenerCount = state.$el.find('#rootscope-listener-count');
 
   // initialize the canvas
   var graphSz = {width: 130, height: 40};
@@ -242,6 +243,20 @@ function showAngularStats(opts) {
       color = 'color:' + getColor(tracked, opts.watchCountThreshold);
     }
     return color;
+
+
+  function getListenerCount(){
+    var $rootScope = getRootScope();
+    var keys = Object.keys($rootScope.$$listenerCount);
+    var counter = 0;
+    for (var i = 0; i < keys.length; i++){
+        var name = keys[i];
+        if (name === "$destroy"){
+            continue;
+        }
+        counter += $rootScope.$$listenerCount[name];
+    }
+    return [counter, ($rootScope.$$listenerCount["$destroy"] || 0)];
   }
 
   function addDataToCanvas(watchCount, digestLength) {
@@ -252,6 +267,8 @@ function showAngularStats(opts) {
     lastDigestLength = nullOrUndef(digestLength) ? lastDigestLength : digestLength;
     $watchCount.text(lastWatchCount).css({color: watchColor});
     $digestTime.text(lastDigestLength.toFixed(2)).css({color: digestColor});
+    var listenerCount = getListenerCount();
+    $listenerCount.text(listenerCount[0] + " | " + listenerCount[1]);
 
     if (!digestLength) {
       return;
