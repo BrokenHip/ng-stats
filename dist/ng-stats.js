@@ -171,11 +171,11 @@ return /******/ (function(modules) { // webpackBootstrap
 	      borderRight: '1px solid #666',
 	      color: '#666',
 	      fontFamily: 'Courier',
-	      width: 130,
+	      width: 290,
 	      zIndex: 9999,
-	      textAlign: 'right',
+	      textAlign: 'left',
 	      top: '9px',
-	      left: '50em'
+	      left: '60em'
 	    }
 	  }, opts || {});
 
@@ -232,13 +232,14 @@ return /******/ (function(modules) { // webpackBootstrap
 
 	  // add the DOM element
 	  var htmlId = opts.htmlId ? ' id="' + opts.htmlId + '"' : '';
-	  state.$el = angular.element('<div' + htmlId + '><canvas></canvas><div><span></span> | <span></span></div></div>').css(opts.styles);
+	  state.$el = angular.element('<div style="font-size: 11px"' + htmlId + '><canvas></canvas><span></span> | <span></span> - <span id="rootscope-listener-count" style="color: white;">-</span></div></div>').css(opts.styles);
 	  bodyEl.append(state.$el);
 	  var $watchCount = state.$el.find('span');
 	  var $digestTime = $watchCount.next();
+      var $listenerCount = state.$el.find('#rootscope-listener-count');
 
 	  // initialize the canvas
-	  var graphSz = { width: 130, height: 40 };
+	  var graphSz = { width: 290, height: 40 };
 	  var cvs = state.$el.find('canvas').attr(graphSz)[0];
 
 	  // add listeners
@@ -297,14 +298,29 @@ return /******/ (function(modules) { // webpackBootstrap
 	  }
 
 	  function colorLog(thingToLog, tracked) {
-	    var color;
-	    if (thingToLog === 'digest') {
-	      color = 'color:' + getColor(tracked, opts.digestTimeThreshold);
-	    } else if (thingToLog === 'watches') {
-	      color = 'color:' + getColor(tracked, opts.watchCountThreshold);
-	    }
-	    return color;
+          var color;
+          if (thingToLog === 'digest') {
+              color = 'color:' + getColor(tracked, opts.digestTimeThreshold);
+          } else if (thingToLog === 'watches') {
+              color = 'color:' + getColor(tracked, opts.watchCountThreshold);
+          }
+          return color;
+      }
+
+          function getListenerCount(){
+              var $rootScope = getRootScope();
+              var keys = Object.keys($rootScope.$$listenerCount);
+              var counter = 0;
+              for (var i = 0; i < keys.length; i++){
+                  var name = keys[i];
+                  if (name === "$destroy"){
+                      continue;
+                  }
+                  counter += $rootScope.$$listenerCount[name];
+              }
+              return [counter, ($rootScope.$$listenerCount["$destroy"] || 0)];
 	  }
+
 
 	  function addDataToCanvas(watchCount, digestLength) {
 	    var averageDigest = digestLength || lastDigestLength;
@@ -314,6 +330,9 @@ return /******/ (function(modules) { // webpackBootstrap
 	    lastDigestLength = nullOrUndef(digestLength) ? lastDigestLength : digestLength;
 	    $watchCount.text(lastWatchCount).css({ color: watchColor });
 	    $digestTime.text(lastDigestLength.toFixed(2)).css({ color: digestColor });
+
+	    var listenerCount = getListenerCount();
+        $listenerCount.text(listenerCount[0] + " | " + listenerCount[1]);
 
 	    if (!digestLength) {
 	      return;
