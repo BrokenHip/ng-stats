@@ -166,7 +166,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	    logWatches: false,
 	    styles: {
 	      position: 'fixed',
-	      background: 'black',
+	      background: '#4C495C',
 	      borderBottom: '1px solid #666',
 	      borderRight: '1px solid #666',
 	      color: '#666',
@@ -174,10 +174,8 @@ return /******/ (function(modules) { // webpackBootstrap
 	      width: 130,
 	      zIndex: 9999,
 	      textAlign: 'right',
-	      top: opts.position.indexOf('top') === -1 ? null : 0,
-	      bottom: opts.position.indexOf('bottom') === -1 ? null : 0,
-	      right: opts.position.indexOf('right') === -1 ? null : 0,
-	      left: opts.position.indexOf('left') === -1 ? null : 0
+	      top: '9px,
+	      left: '50em'
 	    }
 	  }, opts || {});
 
