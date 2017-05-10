@@ -174,7 +174,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	      width: 130,
 	      zIndex: 9999,
 	      textAlign: 'right',
-	      top: '9px,
+	      top: '9px',
 	      left: '50em'
 	    }
 	  }, opts || {});
